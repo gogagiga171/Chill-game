@@ -11,37 +11,43 @@ pg.font.init()
 my_font = pg.font.SysFont('Comic Sans MS', 300)
 title_font = pg.font.SysFont('Comic Sans MS', 100)
 running = True
+
+#settings varibles
 max_vel = 5
 vel_delta = 0.3
 wall_speed = 2
-pg.mixer.music.load("Relax.mp3")
-pg.mixer.music.play()
 title_screen_text = "Tap to play."
 mode = "title"
 
+#turning on music
+pg.mixer.music.load("Relax.mp3")
+pg.mixer.music.play()
+
 while running:
+    
     screen.fill("white")
-    for event in pg.event.get():
+    
+    for event in pg.event.get():#if game closed stop programm
         if event.type == pg.QUIT:
             running = False
-    if mode == "game":
-        if pg.mouse.get_pressed()[0]==1:
+            
+    if mode == "game": #game screen
+        if pg.mouse.get_pressed()[0]==1:#player controls
         	if vel < max_vel:
          	   vel+=vel_delta
         else:
             if vel > (-max_vel):
             	vel -= vel_delta
-        if time.time()-start > 4:
+            	
+        if time.time()-start > 4:#spawn walls
         	hole_y = random.randint(50, 1200)
         	walls.append(pg.Rect(700, 0, 30, hole_y))
         	walls.append(pg.Rect(700, hole_y+150, 30, 1350-hole_y))
         	start = time.time()
     	
-    	
-    
         col = False
         walls_to_remove = []
-        for wall in walls:
+        for wall in walls:#walls logic
         	pg.draw.rect(screen, "black", wall)
         	wall.x -= wall_speed
         	if wall.colliderect(pg.Rect(20, y, 30, 30)):
@@ -50,19 +56,19 @@ while running:
         	    count += 0.5
         	    walls_to_remove.append(walls.index(wall))
         walls_to_remove.sort(reverse=True)
-        for i in walls_to_remove:
+        for i in walls_to_remove:#removing walls of screen
             walls.pop(i)
     
-        y -= vel
+        y -= vel #player logic
         if y < 0 or y > 1470 or col:
         	mode = "title"
         	title_screen_text = "Tap to retry."
     
-        pg.draw.rect(screen, "black", pg.Rect(20, y, 30, 30))
+        pg.draw.rect(screen, "black", pg.Rect(20, y, 30, 30)) #drawing things
         text_surface = my_font.render(str(int(count)), False, (0, 0, 0))
         screen.blit(text_surface, (300,0))
         
-    if mode == "title":
+    if mode == "title": #title screen
         if pg.mouse.get_pressed()[0]==1:
         	mode = "game"
         	start = time.time()
